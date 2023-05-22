@@ -1,27 +1,25 @@
-CC=gcc
-INCLUDES=-Isrc
 CFLAGS=-std=c99 -Wall -Wextra -Wno-pointer-arith \
-	   -pedantic -gdwarf-4 -MMD -MP -O0 -D_GNU_SOURCE -c $(INCLUDES)
-LDFLAGS=-Llib -llog
+	   -pedantic -gdwarf-4 -MMD -MP -O0 \
+	   -Isrc -D_GNU_SOURCE -c
+
 FILES=$(shell find src -type f -name "*.c")
 OBJ=$(FILES:src/%.c=obj/%.o)
-TEST_OBJ=obj/test.o $(OBJ)
 
-TEST_EXE=test
+all: test
 
-all: $(TEST_EXE)
+test: libaarya obj/test.o
+	gcc obj/test.o -Llib -llog -laarya -o test
 
-$(TEST_EXE): $(TEST_OBJ)
-	@mkdir -p $(dir $@);
-	$(CC) $^ $(LDFLAGS) -o $@
+libaarya: $(OBJ)
+	ar rcs lib/libaarya.a $^
 
 obj/%.o: src/%.c
-	@mkdir -p $(dir $@);
-	$(CC) $(CFLAGS) $< -o $@
+	mkdir -p obj;
+	gcc $(CFLAGS) $< -o $@
 
 clean:
-	rm -rf obj $(TEST_EXE)
+	rm -rf obj test
 
-.PHONY: clean
+.PHONY: clean libaarya
 
--include $(OBJS_DIR)/*.d
+-include obj/*.d
