@@ -5,10 +5,13 @@ CFLAGS=-std=c99 -Wall -Wextra -Wno-pointer-arith \
 FILES=$(shell find src -type f -name "*.c")
 OBJ=$(FILES:src/%.c=obj/%.o)
 
-all: test
+all: test string_test
+
+string_test: libaarya obj/string_test.o
+	gcc obj/string_test.o -Llib -llog -laarya -o $@
 
 test: libaarya obj/test.o
-	gcc obj/test.o -Llib -llog -laarya -o test
+	gcc obj/test.o -Llib -llog -laarya -o $@
 
 libaarya: $(OBJ)
 	ar rcs lib/libaarya.a $^
@@ -18,7 +21,7 @@ obj/%.o: src/%.c
 	gcc $(CFLAGS) $< -o $@
 
 clean:
-	rm -rf obj test
+	rm -rf obj test string_test
 
 .PHONY: clean libaarya
 
