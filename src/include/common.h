@@ -22,7 +22,7 @@ char *trimwhitespace(char *str);
 size_t _align_capacity(size_t capacity);
 
 typedef int (*elem_compare_type)(const void *elem_ptr_1,
-								 const void *elem_ptr_2);
+                                 const void *elem_ptr_2);
 typedef void *(*elem_copy_type)(void *elem_ptr);
 typedef void (*elem_free_type)(void *elem_ptr);
 typedef char *(*elem_to_string_type)(void *elem_ptr);
