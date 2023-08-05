@@ -8,10 +8,10 @@ OBJ=$(FILES:src/%.c=obj/%.o)
 all: test string_test
 
 string_test: libaarya obj/string_test.o
-	gcc obj/string_test.o -Llib -llog -laarya -o $@
+	gcc obj/string_test.o -Llib -laarya -o $@
 
 test: libaarya obj/test.o
-	gcc obj/test.o -Llib -llog -laarya -o $@
+	gcc obj/test.o -Llib -laarya -o $@
 
 libaarya: $(OBJ)
 	ar rcs lib/libaarya.a $^

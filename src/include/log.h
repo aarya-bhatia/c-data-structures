@@ -1,58 +1,57 @@
-/**
- * Copyright (c) 2020 rxi
- *
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the MIT license. See `log.c` for details.
- */
-
-#ifndef LOG_H
-#define LOG_H
+#ifndef __LOG_h__
+#define __LOG_h__
 
 #include <stdio.h>
-#include <stdarg.h>
-#include <stdbool.h>
-#include <time.h>
+#include <errno.h>
+#include <string.h>
 
-#define LOG_VERSION "0.1.0"
+#ifndef LOGLEVEL
+#define LOGLEVEL 4
+#endif
 
-typedef struct
-{
-	va_list ap;
-	const char *fmt;
-	const char *file;
-	struct tm *time;
-	void *udata;
-	int line;
-	int level;
-} log_Event;
+#define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
-typedef void (*log_LogFn)(log_Event *ev);
-typedef void (*log_LockFn)(bool lock, void *udata);
+#if LOGLEVEL < 3
+#define NDEBUG 1
+#endif
 
-enum
-{
-	LOG_TRACE,
-	LOG_DEBUG,
-	LOG_INFO,
-	LOG_WARN,
-	LOG_ERROR,
-	LOG_FATAL
-};
+#ifdef NDEBUG
+/* compile with all debug messages removed */
+#define log_debug(M, ...)
+#else
+#ifdef LOG_NOCOLORS
+  #define log_debug(M, ...) fprintf(stderr, "DEBUG " M " at %s (%s:%d) \n", ##__VA_ARGS__, __func__, __FILE__, __LINE__)
+#else
+  #define log_debug(M, ...) fprintf(stderr, "\33[34mDEBUG\33[39m " M "  \33[90m at %s (%s:%d) \33[39m\n", ##__VA_ARGS__, __func__, __FILE__, __LINE__)
+#endif /* NOCOLORS */
+#endif /* NDEBUG */
 
-#define log_trace(...) log_log(LOG_TRACE, __FILE__, __LINE__, __VA_ARGS__)
-#define log_debug(...) log_log(LOG_DEBUG, __FILE__, __LINE__, __VA_ARGS__)
-#define log_info(...) log_log(LOG_INFO, __FILE__, __LINE__, __VA_ARGS__)
-#define log_warn(...) log_log(LOG_WARN, __FILE__, __LINE__, __VA_ARGS__)
-#define log_error(...) log_log(LOG_ERROR, __FILE__, __LINE__, __VA_ARGS__)
-#define log_fatal(...) log_log(LOG_FATAL, __FILE__, __LINE__, __VA_ARGS__)
+/* safe readable version of errno */
+#define clean_errno() (errno == 0 ? "None" : strerror(errno))
 
-const char *log_level_string(int level);
-void log_set_lock(log_LockFn fn, void *udata);
-void log_set_level(int level);
-void log_set_quiet(bool enable);
-int log_add_callback(log_LogFn fn, void *udata, int level);
-int log_add_fp(FILE *fp, int level);
+#ifdef LOG_NOCOLORS
+  #define log_error(M, ...) fprintf(stderr,  "ERR   " M " at %s (%s:%d) errno:%s\n", ##__VA_ARGS__, __func__, __FILE__, __LINE__, clean_errno())
+  #define log_warn(M, ...) fprintf(stderr, "WARN  " M " at %s (%s:%d) errno:%s\n", ##__VA_ARGS__, __func__, __FILE__, __LINE__, clean_errno())
+  #define log_info(M, ...) fprintf(stderr, "INFO  " M " at %s (%s:%d)\n", ##__VA_ARGS__, __func__, __FILENAME__, __LINE__)
+#else
+  #define log_error(M, ...) fprintf(stderr,  "\33[31mERR\33[39m   " M "  \33[90m at %s (%s:%d) \33[94merrno: %s\33[39m\n", ##__VA_ARGS__, __func__, __FILE__, __LINE__, clean_errno())
+  #define log_warn(M, ...) fprintf(stderr, "\33[91mWARN\33[39m  " M "  \33[90m at %s (%s:%d) \33[94merrno: %s\33[39m\n", ##__VA_ARGS__, __func__, __FILE__, __LINE__, clean_errno())
+  #define log_info(M, ...) fprintf(stderr, "\33[32mINFO\33[39m  " M "  \33[90m at %s (%s:%d) \33[39m\n", ##__VA_ARGS__, __func__, __FILENAME__, __LINE__)
+#endif /* NOCOLORS */
 
-void log_log(int level, const char *file, int line, const char *fmt, ...);
+#if LOGLEVEL < 4
+#undef log_info
+#define log_info(M, ...)
+#endif
+
+#if LOGLEVEL < 2
+#undef log_warn
+#define log_warn(M, ...)
+#endif
+
+#if LOGLEVEL < 1
+#undef log_error
+#define log_error(M, ...)
+#endif
 
 #endif

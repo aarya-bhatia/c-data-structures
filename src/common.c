@@ -1,5 +1,6 @@
 #include "include/common.h"
 
+#include <stdarg.h>
 #include <ctype.h>
 #include <stdlib.h>
 

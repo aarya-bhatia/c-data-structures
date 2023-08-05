@@ -1,6 +1,6 @@
-#include "include/String.h"
+#include "include/astring.h"
 
-void check_string(String *s, char *value, size_t size) {
+void check_string(string_t *s, char *value, size_t size) {
 	log_info("check %s, %zu", value, size);
 
 	assert(s);
@@ -12,8 +12,8 @@ void check_string(String *s, char *value, size_t size) {
 void check_string_append(char *s1, char *s2) {
 	log_info("check append %s, %s", s1, s2);
 
-	String *t1 = CstrToString(s1);
-	String *t2 = CstrToString(s2);
+	string_t *t1 = CstrToString(s1);
+	string_t *t2 = CstrToString(s2);
 
 	assert(t1);
 	assert(t2);
@@ -39,15 +39,15 @@ void check_string_append(char *s1, char *s2) {
 }
 
 int main() {
-	String *s = StringDefaultConstructor();
+	string_t *s = StringDefaultConstructor();
 	check_string(s, "", 0);
 	assert(s->capacity == INITIAL_CAPACITY);
 
-	String *s1 = CstrToString("aarya");
+	string_t *s1 = CstrToString("aarya");
 	check_string(s1, "aarya", 5);
 
 	char *c2 = StringSlice(s1, 1, 3);
-	String *s2 = CstrToString(c2);
+	string_t *s2 = CstrToString(c2);
 	free(c2);
 	check_string(s2, "ar", 2);
 
@@ -55,7 +55,7 @@ int main() {
 	assert(!StringSlice(s1, 6, 7));
 
 	char *c3 = StringSlice(s1, 0, 0);
-	String *s3 = CstrToString(c3);
+	string_t *s3 = CstrToString(c3);
 	free(c3);
 	check_string(s3, "", 0);
 

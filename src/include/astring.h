@@ -4,68 +4,66 @@
 
 #define INITIAL_CAPACITY 64
 
-// typedef struct _String String;
-
 /**
  * Represents a String object as a flexible array of characters
  */
-typedef struct _String {
-	char *buffer;
-	size_t size;
-	size_t capacity;
-} String;
+typedef struct string_t {
+  char *buffer;
+  size_t size;
+  size_t capacity;
+} string_t;
 
 size_t _GetCapacity(size_t n);
-void StringWrite(String *s, int fd);
+void StringWrite(string_t *s, int fd);
 
 /**
  * Creates a new String object with a capacity of at least n characters
  */
-String *StringConstructor(size_t n);
+string_t *StringConstructor(size_t n);
 
 /**
  * Creates new String with default capacity
  */
-String *StringDefaultConstructor();
+string_t *StringDefaultConstructor();
 
-size_t StringSize(const String *s);
-size_t StringCapacity(const String *s);
+size_t StringSize(const string_t *s);
+size_t StringCapacity(const string_t *s);
 
 /**
  * Adds a single characters to the end of the String
  */
-void StringAdd(String *s, char c);
+void StringAdd(string_t *s, char c);
 
 /**
  * Adds a c string to the end of the String
  */
-void StringAddCstr(String *s, char *cstr);
+void StringAddCstr(string_t *s, char *cstr);
 
 /**
  * Concatenates the String other to the String s
  */
-void StringAppend(String *s, const String *other);
+void StringAppend(string_t *s, const string_t *other);
 
 /**
  * Creates a C string from given String
  */
-char *StringToCstr(String *s);
+char *StringToCstr(string_t *s);
 
 /**
  * Creates a String object from a C string
  */
-String *CstrToString(char *cstr);
+string_t *CstrToString(char *cstr);
 
 /**
  * Destructor to free up all memory allocated by the String including itself
  */
-void StringDestructor(String *s);
+void StringDestructor(string_t *s);
 
 /**
  * Returns a substring (C string) of given String in the range [start ... end)
  * Returns NULL if invalid range i.e. end > start
  */
-char *StringSlice(String *s, size_t start, size_t end);
+char *StringSlice(string_t *s, size_t start, size_t end);
 
 /**
  * To change the size of given String to specified size.
@@ -77,7 +75,7 @@ char *StringSlice(String *s, size_t start, size_t end);
  * - The capacity of the string will be at least the minimum capacity, i.e.
  * capacity >= size.
  */
-void StringResize(String *s, size_t size);
+void StringResize(string_t *s, size_t size);
 
 /**
  * - This function will do nothing if new capacity is smaller than old capacity.
@@ -85,8 +83,8 @@ void StringResize(String *s, size_t size);
  * bytes.
  * - It will NOT change the size of the string, but it MAY change its capacity.
  */
-void StringReserve(String *s, size_t capacity);
+void StringReserve(string_t *s, size_t capacity);
 
 /** Utilities **/
 
-String *wrap_with_quotes(char *str);
+string_t *wrap_with_quotes(char *str);
