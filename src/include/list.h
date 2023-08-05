@@ -1,7 +1,6 @@
 #pragma once
 
-#include <stdbool.h>
-#include <sys/types.h>
+#include "common.h"
 
 typedef struct ListNode {
 	void *elem;
@@ -13,8 +12,8 @@ typedef struct List {
 	ListNode *head;
 	ListNode *tail;
 	size_t size;
-	void *(*elem_copy)(void *);
-	void (*elem_free)(void *);
+	copy_type elem_copy;
+	free_type elem_free;
 } List;
 
 typedef struct ListIter {

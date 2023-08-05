@@ -3,35 +3,29 @@
 #include <assert.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/types.h>
-#include <unistd.h>
 
 #include "log.h"
 
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
-#define DEFAULT_CAPACITY 8
-
 char *make_string(char *format, ...);
 char *rstrstr(char *string, char *pattern);
 char *trimwhitespace(char *str);
 size_t _align_capacity(size_t capacity);
 
-typedef int (*elem_compare_type)(const void *elem_ptr_1,
-                                 const void *elem_ptr_2);
-typedef void *(*elem_copy_type)(void *elem_ptr);
-typedef void (*elem_free_type)(void *elem_ptr);
-typedef char *(*elem_to_string_type)(void *elem_ptr);
-typedef size_t (*elem_hash_type)(void *elem_ptr);
-typedef void (*elem_callback_type)(void *elem_ptr);
-typedef bool (*elem_filter_type)(void *elem_ptr);
+typedef int (*compare_type)(const void *elem_ptr_1, const void *elem_ptr_2);
+typedef void *(*copy_type)(void *elem_ptr);
+typedef void (*free_type)(void *elem_ptr);
+typedef char *(*to_string_type)(void *elem_ptr);
+typedef size_t (*hash_type)(void *elem_ptr);
+typedef void (*callback_type)(void *elem_ptr);
+typedef bool (*filter_type)(void *elem_ptr);
 
-#define string_copy ((elem_copy_type)strdup)
-#define string_compare ((elem_compare_type)strcmp)
+#define string_copy ((copy_type)strdup)
+#define string_compare ((compare_type)strcmp)
 
 void *shallow_copy(void *elem_ptr);
 void shallow_free(void *elem_ptr);

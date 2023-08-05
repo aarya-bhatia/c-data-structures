@@ -1,6 +1,6 @@
 #include "include/queue.h"
 
-queue_t *queue_alloc(elem_copy_type elem_copy, elem_free_type elem_free) {
+queue_t *queue_alloc(copy_type elem_copy, free_type elem_free) {
 	queue_t *this = calloc(1, sizeof *this);
 	this->l = List_alloc(elem_copy, elem_free);
 	pthread_mutex_init(&this->m, NULL);

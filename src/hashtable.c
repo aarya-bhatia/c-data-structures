@@ -5,9 +5,9 @@
 size_t ht_size(Hashtable *this) { return this->size; }
 size_t ht_capacity(Hashtable *this) { return this->capacity; }
 
-Hashtable *ht_alloc(elem_copy_type key_copy, elem_free_type key_free,
-                    elem_compare_type key_compare, elem_hash_type key_hash,
-                    elem_copy_type value_copy, elem_free_type value_free) {
+Hashtable *ht_alloc(copy_type key_copy, free_type key_free,
+                    compare_type key_compare, hash_type key_hash,
+                    copy_type value_copy, free_type value_free) {
   Hashtable *this = calloc(1, sizeof *this);
   this->capacity = HT_INITIAL_CAPACITY;
   this->table = calloc(HT_INITIAL_CAPACITY, sizeof *this->table);
@@ -24,8 +24,8 @@ Hashtable *ht_alloc(elem_copy_type key_copy, elem_free_type key_free,
   return this;
 }
 
-void ht_print(Hashtable *this, elem_to_string_type key_to_string,
-              elem_to_string_type value_to_string) {
+void ht_print(Hashtable *this, to_string_type key_to_string,
+              to_string_type value_to_string) {
   HTNode *itr = NULL;
   for (size_t i = 0; i < this->capacity; i++) {
     itr = this->table[i];

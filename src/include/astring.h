@@ -13,7 +13,6 @@ typedef struct string_t {
   size_t capacity;
 } string_t;
 
-size_t _GetCapacity(size_t n);
 void StringWrite(string_t *s, int fd);
 
 /**

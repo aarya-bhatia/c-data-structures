@@ -38,7 +38,7 @@ void list_test() {
 		}
 	}
 
-	log_info("success");
+	log_info("%s", "success");
 }
 
 struct s {
@@ -90,17 +90,17 @@ void hashtable_iter_test() {
 
 	assert(sum == n * (n - 1) / 2);
 
-	ht_print(this, (elem_to_string_type)int_to_string, shallow_to_string);
+	ht_print(this, (to_string_type)int_to_string, shallow_to_string);
 	ht_free(this);
 }
 
 void hashtable_test() {
 	Hashtable *this =
 		ht_alloc(string_copy, free, string_compare, string_hash,
-				 (elem_copy_type)struct_copy, (elem_free_type)struct_free);
+				 (copy_type)struct_copy, (free_type)struct_free);
 
-	this->value_copy = (elem_copy_type)struct_copy;
-	this->value_free = (elem_free_type)struct_free;
+	this->value_copy = (copy_type)struct_copy;
+	this->value_free = (free_type)struct_free;
 
 	{
 		struct s s1;

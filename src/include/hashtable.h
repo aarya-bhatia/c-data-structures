@@ -16,12 +16,12 @@ typedef struct Hashtable {
 	size_t size;
 	size_t capacity;
 	unsigned int seed;
-	elem_copy_type key_copy;
-	elem_free_type key_free;
-	elem_compare_type key_compare;
-	elem_copy_type value_copy;
-	elem_free_type value_free;
-	elem_hash_type hash;
+	copy_type key_copy;
+	free_type key_free;
+	compare_type key_compare;
+	copy_type value_copy;
+	free_type value_free;
+	hash_type hash;
 } Hashtable;
 
 typedef struct HashtableIter {
@@ -40,12 +40,12 @@ typedef struct HashtableIter {
 Hashtable *ht_alloc_string_to_shallow();
 Hashtable *ht_alloc_int_to_shallow();
 
-Hashtable *ht_alloc(elem_copy_type key_copy, elem_free_type key_free,
-					elem_compare_type key_compare, elem_hash_type key_hash,
-					elem_copy_type value_copy, elem_free_type value_free);
+Hashtable *ht_alloc(copy_type key_copy, free_type key_free,
+					compare_type key_compare, hash_type key_hash,
+					copy_type value_copy, free_type value_free);
 
-void ht_print(Hashtable *, elem_to_string_type key_to_string,
-			  elem_to_string_type value_to_string);
+void ht_print(Hashtable *, to_string_type key_to_string,
+			  to_string_type value_to_string);
 void ht_free(Hashtable *);
 
 size_t ht_size(Hashtable *);

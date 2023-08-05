@@ -1,16 +1,5 @@
 #include "include/astring.h"
-
-size_t _GetCapacity(size_t n) {
-  size_t c = 1;
-  while (c < n) {
-    c = c << 1;
-  }
-  return c;
-}
-
-void StringWrite(string_t *this, int fd) {
-  write(fd, this->buffer, this->size);
-}
+#include "include/common.h"
 
 /**
  * Creates a new string_tobject with a capacity of at least n characters
@@ -18,7 +7,7 @@ void StringWrite(string_t *this, int fd) {
 string_t *StringConstructor(size_t n) {
   string_t *this = malloc(sizeof *this);
   this->size = 0;
-  this->capacity = MAX(_GetCapacity(n), INITIAL_CAPACITY);
+  this->capacity = MAX(_align_capacity(n), INITIAL_CAPACITY);
   this->buffer = calloc(this->capacity, 1);
 
   return this;
@@ -124,7 +113,7 @@ void StringResize(string_t *this, size_t size) {
     return;
   }
 
-  this->capacity = _GetCapacity(size);
+  this->capacity = _align_capacity(size);
   this->buffer = realloc(this->buffer, this->capacity);
 
   if (size > this->size) {
@@ -146,7 +135,7 @@ void StringResize(string_t *this, size_t size) {
  */
 void StringReserve(string_t *this, size_t capacity) {
   if (capacity > this->capacity) {
-    this->capacity = _GetCapacity(capacity);
+    this->capacity = _align_capacity(capacity);
     this->buffer = realloc(this->buffer, this->capacity);
   }
 }
