@@ -6,46 +6,46 @@
 #define HT_INITIAL_CAPACITY 11
 
 typedef struct HTNode {
-	void *key;
-	void *value;
-	struct HTNode *next;
+  void *key;
+  void *value;
+  struct HTNode *next;
 } HTNode;
 
 typedef struct Hashtable {
-	HTNode **table;
-	size_t size;
-	size_t capacity;
-	unsigned int seed;
-	copy_type key_copy;
-	free_type key_free;
-	compare_type key_compare;
-	copy_type value_copy;
-	free_type value_free;
-	hash_type hash;
+  HTNode **table;
+  size_t size;
+  size_t capacity;
+  unsigned int seed;
+  copy_type key_copy;
+  free_type key_free;
+  compare_type key_compare;
+  copy_type value_copy;
+  free_type value_free;
+  hash_type hash;
 } Hashtable;
 
 typedef struct HashtableIter {
-	Hashtable *hashtable;
-	size_t index;
-	HTNode *node;
-	bool start;
+  Hashtable *hashtable;
+  size_t index;
+  HTNode *node;
+  bool start;
 } HashtableIter;
 
-#define HASHTABLE_FOR_EACH(hashtable, iterator, key_ptr, value_ptr, callback) \
-	ht_iter_init(&iterator, hashtable);                                       \
-	while (ht_iter_next(&iterator, (void **)key, (void **)value)) {           \
-		callback;                                                             \
-	}
+#define HASHTABLE_FOR_EACH(hashtable, iterator, key_ptr, value_ptr, callback)  \
+  ht_iter_init(&iterator, hashtable);                                          \
+  while (ht_iter_next(&iterator, (void **)key, (void **)value)) {              \
+    callback;                                                                  \
+  }
 
 Hashtable *ht_alloc_string_to_shallow();
 Hashtable *ht_alloc_int_to_shallow();
 
 Hashtable *ht_alloc(copy_type key_copy, free_type key_free,
-					compare_type key_compare, hash_type key_hash,
-					copy_type value_copy, free_type value_free);
+                    compare_type key_compare, hash_type key_hash,
+                    copy_type value_copy, free_type value_free);
 
 void ht_print(Hashtable *, to_string_type key_to_string,
-			  to_string_type value_to_string);
+              to_string_type value_to_string);
 void ht_free(Hashtable *);
 
 size_t ht_size(Hashtable *);

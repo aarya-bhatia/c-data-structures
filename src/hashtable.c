@@ -309,10 +309,10 @@ uint32_t fnv_hash(const void *key, size_t len) {
 /**
  * Implementation of djb2 hash function
  *
- * @param str_ptr A pointer to a string
+ * @param str_ptr a string
  */
-size_t string_hash(void *str_ptr) {
-  char *str = (char *)str_ptr;
+size_t string_hash(void *data) {
+  char *str = (char *)data;
   unsigned long hash = 5381;
   int c;
 

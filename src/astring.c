@@ -1,6 +1,9 @@
 #include "include/astring.h"
 #include "include/common.h"
 
+size_t StringSize(const string_t *this) { return this->size; }
+size_t StringCapacity(const string_t *this) { return this->capacity; }
+
 /**
  * Creates a new string_tobject with a capacity of at least n characters
  */
@@ -16,10 +19,6 @@ string_t *StringConstructor(size_t n) {
 string_t *StringDefaultConstructor() {
   return StringConstructor(INITIAL_CAPACITY);
 }
-
-size_t StringSize(const string_t *this) { return this->size; }
-
-size_t StringCapacity(const string_t *this) { return this->capacity; }
 
 /**
  * Adds a single characters to the end of the String
@@ -138,12 +137,4 @@ void StringReserve(string_t *this, size_t capacity) {
     this->capacity = _align_capacity(capacity);
     this->buffer = realloc(this->buffer, this->capacity);
   }
-}
-
-string_t *wrap_with_quotes(char *str) {
-  string_t *s = StringDefaultConstructor();
-  StringAdd(s, '"');
-  StringAddCstr(s, str);
-  StringAdd(s, '"');
-  return s;
 }

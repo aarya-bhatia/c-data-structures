@@ -1,6 +1,8 @@
 #include "include/list.h"
 
-size_t List_size(List *this) { return this->size; }
+size_t List_size(List *this) { 
+  return this->size; 
+}
 
 List *List_alloc(copy_type elem_copy, free_type elem_free) {
   List *this = calloc(1, sizeof *this);

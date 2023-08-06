@@ -83,7 +83,3 @@ void StringResize(string_t *s, size_t size);
  * - It will NOT change the size of the string, but it MAY change its capacity.
  */
 void StringReserve(string_t *s, size_t capacity);
-
-/** Utilities **/
-
-string_t *wrap_with_quotes(char *str);

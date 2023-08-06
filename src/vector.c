@@ -1,5 +1,29 @@
 #include "include/vector.h"
 
+size_t Vector_size(Vector *this) {
+  return this->size;
+}
+
+size_t Vector_capacity(Vector *this) {
+  return this->capacity;
+}
+
+void *Vector_first(Vector *this) {
+  assert(this->size > 0);
+  return Vector_at(this, 0);
+}
+
+void *Vector_last(Vector *this) {
+  assert(this->size > 0);
+  return Vector_at(this, Vector_size(this) - 1);
+}
+
+void *Vector_at(Vector *this, size_t index) {
+  assert(this);
+  assert(index < this->size);
+  return this->elems[index];
+}
+
 Vector *Vector_alloc(copy_type elem_copy, free_type elem_free) {
   Vector *this = calloc(1, sizeof *this);
   this->elems = calloc(DEFAULT_CAPACITY, sizeof *this->elems);
@@ -20,17 +44,6 @@ void Vector_free(Vector *this) {
 
   free(this->elems);
   free(this);
-}
-
-size_t Vector_size(Vector *this) {
-  assert(this);
-  return this->size;
-}
-
-void *Vector_at(Vector *this, size_t index) {
-  assert(this);
-  assert(index < this->size);
-  return this->elems[index];
 }
 
 void Vector_reserve(Vector *this, size_t capacity) {
@@ -93,19 +106,4 @@ void Vector_foreach(Vector *this, void (*callback)(void *elem_ptr)) {
   for (size_t i = 0; i < this->size; i++) {
     callback(this->elems[i]);
   }
-}
-
-Vector *Vector_filter(Vector *this, filter_type filter) {
-  assert(this);
-  assert(filter);
-
-  Vector *results = Vector_alloc(this->elem_copy, this->elem_free);
-
-  for (size_t i = 0; i < this->size; i++) {
-    if (filter(this->elems[i])) {
-      Vector_push(results, this->elem_copy(this->elems[i]));
-    }
-  }
-
-  return results;
 }

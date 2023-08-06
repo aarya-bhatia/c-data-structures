@@ -5,10 +5,13 @@
 #include "common.h"
 #include "list.h"
 
+/**
+ * A thread safe blocking queue
+ */
 typedef struct queue_t {
-	List *l;
-	pthread_mutex_t m;
-	pthread_cond_t cv;
+  List *l;
+  pthread_mutex_t m;
+  pthread_cond_t cv;
 } queue_t;
 
 queue_t *queue_alloc(copy_type copy, free_type elem_free);
