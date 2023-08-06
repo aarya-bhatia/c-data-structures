@@ -3,16 +3,20 @@ CFLAGS=-std=c99 -Wall -Wextra -Wno-pointer-arith \
 	   -Isrc -D_GNU_SOURCE -c
 
 FILES=src/common.c src/astring.c src/queue.c\
-	  src/hashtable.c src/list.c src/vector.c
+	  src/hashtable.c src/list.c src/vector.c\
+	  src/files.c
 
 OBJ=$(FILES:src/%.c=obj/%.o)
 
-all: test string_test ht_test
+all: test string_test ht_test files_test
 
 ht_test: obj/ht_test.o $(OBJ)
 	gcc $^ -o $@
 
 string_test: obj/string_test.o $(OBJ)
+	gcc $^ -o $@
+
+files_test: obj/files_test.o $(OBJ)
 	gcc $^ -o $@
 
 test: obj/test.o $(OBJ)
@@ -26,7 +30,7 @@ obj/%.o: src/%.c
 	gcc $(CFLAGS) $< -o $@
 
 clean:
-	rm -rf obj test string_test ht_test libaarya.a
+	rm -rf obj test string_test ht_test files_test libaarya.a
 
 .PHONY: clean libaarya
 

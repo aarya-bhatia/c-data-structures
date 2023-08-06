@@ -8,8 +8,10 @@
 *.so
 *.exe
 
+data/*
 ht_test
 string_test
+files_test
 test
 
 tmp

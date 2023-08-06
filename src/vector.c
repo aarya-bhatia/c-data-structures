@@ -107,3 +107,11 @@ void Vector_foreach(Vector *this, void (*callback)(void *elem_ptr)) {
     callback(this->elems[i]);
   }
 }
+void Vector_clear(Vector *this) {
+  for(size_t i = 0; i < this->size; i++) {
+    this->elem_free(this->elems[i]);
+    this->elems[i] = NULL;
+  }
+
+  this->size = 0;
+}

@@ -24,3 +24,4 @@ bool Vector_contains(Vector *, const void *target, compare_type compare);
 void Vector_remove(Vector *, size_t index, void **elem_out);
 void Vector_push(Vector *, void *elem);
 void Vector_foreach(Vector *, void (*callback)(void *elem_ptr));
+void Vector_clear(Vector *);
