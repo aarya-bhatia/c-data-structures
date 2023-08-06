@@ -29,9 +29,12 @@ obj/%.o: src/%.c
 	mkdir -p obj;
 	gcc $(CFLAGS) $< -o $@
 
+memcheck:
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./test
+
 clean:
 	rm -rf obj test string_test ht_test files_test libaarya.a
 
-.PHONY: clean libaarya
+.PHONY: clean libaarya memcheck
 
 -include obj/*.d
