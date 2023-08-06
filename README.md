@@ -1,1 +1,0 @@
-- Run tests: `make clean && make && ./test && ./string_test && ./ht_test`
