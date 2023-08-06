@@ -1,0 +1,16 @@
+.env
+*.log
+*.swp
+.DS_Store
+
+*.o
+*.a
+*.so
+*.exe
+
+ht_test
+string_test
+test
+
+tmp
+obj
