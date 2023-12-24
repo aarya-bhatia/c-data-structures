@@ -1,40 +1,22 @@
-#include "include/hashtable.h"
+#include "hashtable.h"
 
-#include "include/common.h"
+#include "common.h"
 
 size_t ht_size(Hashtable *this) { return this->size; }
 size_t ht_capacity(Hashtable *this) { return this->capacity; }
 
 Hashtable *ht_alloc(copy_type key_copy, free_type key_free,
-                    compare_type key_compare, hash_type key_hash,
-                    copy_type value_copy, free_type value_free) {
+                    compare_type key_compare, hash_type key_hash) {
   Hashtable *this = calloc(1, sizeof *this);
   this->capacity = HT_INITIAL_CAPACITY;
-  this->table = calloc(HT_INITIAL_CAPACITY, sizeof *this->table);
+  this->table = calloc(HT_INITIAL_CAPACITY, sizeof(HTNode *));
   this->size = 0;
-  this->seed = rand();
   this->key_copy = key_copy ? key_copy : shallow_copy;
   this->key_free = key_free ? key_free : shallow_free;
   this->key_compare = key_compare ? key_compare : shallow_compare;
-  this->value_copy = value_copy ? value_copy : shallow_copy;
-  this->value_free = value_free ? value_free : shallow_free;
-  this->hash = key_hash;
-  assert(key_hash);
+  this->hash = key_hash ? key_hash : shallow_hash;
 
   return this;
-}
-
-void ht_print(Hashtable *this, to_string_type key_to_string,
-              to_string_type value_to_string) {
-  HTNode *itr = NULL;
-  for (size_t i = 0; i < this->capacity; i++) {
-    itr = this->table[i];
-    while (itr) {
-      log_info("bucket: %zu, key: %s, value: %s", i, key_to_string(itr->key),
-               value_to_string(itr->value));
-      itr = itr->next;
-    }
-  }
 }
 
 HTNode *ht_find(Hashtable *this, const void *key) {
@@ -55,20 +37,19 @@ HTNode *ht_find(Hashtable *this, const void *key) {
   return NULL;
 }
 
-void ht_set(Hashtable *this, void *key, void *value) {
+void ht_set(Hashtable *this, const void *key, void *value) {
   assert(this);
   assert(key);
 
   HTNode *found = ht_find(this, key);
 
   if (found) { // Update existing node value
-    this->value_free(found->value);
-    found->value = this->value_copy(value);
+    found->value = value;
   } else { // Create new node and add to bucket
     size_t hash = this->hash(key) % this->capacity;
     HTNode *new_node = calloc(1, sizeof *new_node);
     new_node->key = this->key_copy(key);
-    new_node->value = this->value_copy(value);
+    new_node->value = value;
     new_node->next = this->table[hash];
     this->table[hash] = new_node;
     this->size++;
@@ -105,28 +86,14 @@ void *ht_get(Hashtable *this, const void *key) {
   return found ? found->value : NULL;
 }
 
-void ht_node_free(Hashtable *this, HTNode *node, void **key_out,
-                  void **value_out) {
+void ht_node_free(Hashtable *this, HTNode *node) {
   assert(this);
   assert(this->key_free);
-  assert(this->value_free);
-
   if (!node) {
     return;
   }
 
-  if (key_out) {
-    *key_out = node->key;
-  } else {
-    this->key_free(node->key);
-  }
-
-  if (value_out) {
-    *value_out = node->value;
-  } else {
-    this->value_free(node->value);
-  }
-
+  this->key_free((void *)node->key);
   memset(node, 0, sizeof *node);
   free(node);
 }
@@ -142,20 +109,23 @@ void ht_free(Hashtable *this) {
 
       while (itr) {
         HTNode *tmp = itr->next;
-        ht_node_free(this, itr, NULL, NULL);
+        ht_node_free(this, itr);
         itr = tmp;
       }
     }
+
+    free(this->table[i]);
+    this->table[i] = NULL;
   }
 
-  memset(this->table, 0, sizeof *this->table * this->capacity);
   free(this->table);
+  this->table = NULL;
 
-  memset(this, 0, sizeof *this);
   free(this);
 }
 
-void ht_foreach(Hashtable *this, void (*callback)(void *key, void *value)) {
+void ht_foreach(Hashtable *this,
+                void (*callback)(const void *key, void *value)) {
   for (size_t i = 0; i < this->capacity; i++) {
     if (this->table[i]) {
       HTNode *itr = this->table[i];
@@ -191,8 +161,7 @@ bool ht_contains(Hashtable *this, const void *key) {
  * @return Returs true if deletion was success. Returns false if no element was
  * deleted i.e key does not exist.
  */
-bool ht_remove(Hashtable *this, const void *key, void **key_out,
-               void **value_out) {
+bool ht_remove(Hashtable *this, const void *key) {
   for (size_t i = 0; i < this->capacity; i++) {
     if (this->table[i]) {
       HTNode *curr = this->table[i];
@@ -206,7 +175,7 @@ bool ht_remove(Hashtable *this, const void *key, void **key_out,
             prev->next = curr->next;
           }
 
-          ht_node_free(this, curr, key_out, value_out);
+          ht_node_free(this, curr);
           this->size--;
 
           return true;
@@ -228,7 +197,8 @@ void ht_iter_init(HashtableIter *itr, Hashtable *ht) {
   itr->start = false;
 }
 
-bool ht_iter_next(HashtableIter *itr, void **key_out, void **value_out) {
+bool ht_iter_next(HashtableIter *itr, const void **key_save,
+                  void **value_save) {
   // End of table
   if (itr->index >= itr->hashtable->capacity) {
     return false;
@@ -264,12 +234,12 @@ bool ht_iter_next(HashtableIter *itr, void **key_out, void **value_out) {
 
   // Save key and value pointer in given pointers
 
-  if (key_out) {
-    *key_out = itr->node->key;
+  if (key_save) {
+    *key_save = itr->node->key;
   }
 
-  if (value_out) {
-    *value_out = itr->node->value;
+  if (value_save) {
+    *value_save = itr->node->value;
   }
 
   return true;
@@ -306,12 +276,8 @@ uint32_t fnv_hash(const void *key, size_t len) {
   return hash;
 }
 
-/**
- * Implementation of djb2 hash function
- *
- * @param str_ptr a string
- */
-size_t string_hash(void *data) {
+size_t string_hash(const void *data) {
+  // djb2 hash function
   char *str = (char *)data;
   unsigned long hash = 5381;
   int c;
@@ -323,17 +289,18 @@ size_t string_hash(void *data) {
   return hash;
 }
 
-/**
- * @param int_ptr A pointer to the integer
- */
-size_t int_hash(void *int_ptr) { return *(int *)int_ptr; }
+size_t int_hash(const void *data) { return jenkins_hash(data, sizeof(int)); }
+size_t shallow_hash(const void *data) { return (size_t)data; }
 
-Hashtable *ht_alloc_string_to_shallow() {
-  return ht_alloc(string_copy, free, string_compare, string_hash, shallow_copy,
-                  shallow_free);
-}
-
-Hashtable *ht_alloc_int_to_shallow() {
-  return ht_alloc(int_copy, free, int_compare, int_hash, shallow_copy,
-                  shallow_free);
+void ht_print(Hashtable *this, to_string_type key_to_string,
+              to_string_type value_to_string) {
+  HTNode *itr = NULL;
+  for (size_t i = 0; i < this->capacity; i++) {
+    itr = this->table[i];
+    while (itr) {
+      log_info("bucket: %zu, key: %s, value: %s", i, key_to_string(itr->key),
+               value_to_string(itr->value));
+      itr = itr->next;
+    }
+  }
 }

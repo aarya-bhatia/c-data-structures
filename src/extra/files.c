@@ -1,4 +1,4 @@
-#include "include/files.h"
+#include "files.h"
 
 char *join(Vector *vector);
 void resolve_path_helper(Vector *vector, char *name);

@@ -1,25 +1,20 @@
-#include "include/list.h"
+#include "list.h"
 
-size_t List_size(List *this) { 
-  return this->size; 
-}
+size_t list_size(List *this) { return this->size; }
 
-List *List_alloc(copy_type elem_copy, free_type elem_free) {
+List *list_alloc() {
   List *this = calloc(1, sizeof *this);
   this->head = NULL;
   this->tail = NULL;
   this->size = 0;
-  this->elem_copy = elem_copy ? elem_copy : shallow_copy;
-  this->elem_free = elem_free ? elem_free : shallow_free;
   return this;
 }
 
-void List_free(List *this) {
+void list_free(List *this) {
   ListNode *tmp = this->head;
 
   while (tmp) {
     ListNode *next = tmp->next;
-    this->elem_free(tmp->elem);
     tmp->elem = NULL;
     free(tmp);
     tmp = next;
@@ -29,7 +24,7 @@ void List_free(List *this) {
   free(this);
 }
 
-void List_insert_after(List *this, ListNode *position, ListNode *insert) {
+void list_insert_after(List *this, ListNode *position, ListNode *insert) {
   assert(this);
   assert(position);
   assert(insert);
@@ -49,7 +44,7 @@ void List_insert_after(List *this, ListNode *position, ListNode *insert) {
   this->size++;
 }
 
-void List_insert_before(List *this, ListNode *position, ListNode *insert) {
+void list_insert_before(List *this, ListNode *position, ListNode *insert) {
   assert(this);
   assert(position);
   assert(insert);
@@ -69,31 +64,31 @@ void List_insert_before(List *this, ListNode *position, ListNode *insert) {
   this->size++;
 }
 
-void List_push_front(List *this, void *elem) {
+void list_push_front(List *this, void *elem) {
   ListNode *node = calloc(1, sizeof *node);
-  node->elem = this->elem_copy(elem);
+  node->elem = elem;
 
   if (!this->size) {
     this->head = this->tail = node;
     this->size = 1;
   } else {
-    List_insert_before(this, this->head, node);
+    list_insert_before(this, this->head, node);
   }
 }
 
-void List_push_back(List *this, void *elem) {
+void list_push_back(List *this, void *elem) {
   ListNode *node = calloc(1, sizeof *node);
-  node->elem = this->elem_copy(elem);
+  node->elem = elem;
 
   if (!this->size) {
     this->head = this->tail = node;
     this->size = 1;
   } else {
-    List_insert_after(this, this->tail, node);
+    list_insert_after(this, this->tail, node);
   }
 }
 
-void List_remove_node(List *this, ListNode *node) {
+void list_remove_node(List *this, ListNode *node) {
   if (this->head == node) {
     this->head = node->next;
   }
@@ -111,45 +106,45 @@ void List_remove_node(List *this, ListNode *node) {
   }
 
   node->next = node->prev = NULL;
-  this->elem_free(node);
+  node->elem = NULL;
   free(node);
   this->size--;
 }
 
-bool List_pop_front(List *this) {
+bool list_pop_front(List *this) {
   if (this->size == 0) {
     return false;
   }
 
-  List_remove_node(this, this->head);
+  list_remove_node(this, this->head);
   return true;
 }
 
-bool List_pop_back(List *this) {
+bool list_pop_back(List *this) {
   if (this->size == 0) {
     return false;
   }
 
-  List_remove_node(this, this->tail);
+  list_remove_node(this, this->tail);
   return true;
 }
 
-void *List_peek_front(List *this) {
+void *list_peek_front(List *this) {
   return this->size ? this->head->elem : NULL;
 }
 
-void *List_peek_back(List *this) {
+void *list_peek_back(List *this) {
   return this->size ? this->tail->elem : NULL;
 }
 
-void List_iter_init(ListIter *iter, List *list) {
+void list_iter_init(ListIter *iter, List *list) {
   assert(iter);
   assert(list);
 
   iter->current = list->head;
 }
 
-bool List_iter_next(ListIter *iter, void **elem_ptr) {
+bool list_iter_next(ListIter *iter, void **elem_ptr) {
   assert(iter);
 
   if (!iter->current) {

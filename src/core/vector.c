@@ -1,52 +1,42 @@
-#include "include/vector.h"
+#include "vector.h"
 
-size_t Vector_size(Vector *this) {
-  return this->size;
-}
+size_t vector_size(Vector *this) { return this->size; }
+size_t vector_capacity(Vector *this) { return this->capacity; }
 
-size_t Vector_capacity(Vector *this) {
-  return this->capacity;
-}
-
-void *Vector_first(Vector *this) {
+void *vector_first(Vector *this) {
   assert(this->size > 0);
-  return Vector_at(this, 0);
+  return vector_at(this, 0);
 }
 
-void *Vector_last(Vector *this) {
+void *vector_last(Vector *this) {
   assert(this->size > 0);
-  return Vector_at(this, Vector_size(this) - 1);
+  return vector_at(this, vector_size(this) - 1);
 }
 
-void *Vector_at(Vector *this, size_t index) {
+void *vector_at(Vector *this, size_t index) {
   assert(this);
   assert(index < this->size);
   return this->elems[index];
 }
 
-Vector *Vector_alloc(copy_type elem_copy, free_type elem_free) {
+Vector *vector_alloc() {
   Vector *this = calloc(1, sizeof *this);
   this->elems = calloc(DEFAULT_CAPACITY, sizeof *this->elems);
   this->size = 0;
   this->capacity = DEFAULT_CAPACITY;
-  this->elem_copy = elem_copy ? elem_copy : shallow_copy;
-  this->elem_free = elem_free ? elem_free : shallow_free;
   return this;
 }
 
-void Vector_free(Vector *this) {
+void vector_free(Vector *this) {
   assert(this);
-
   for (size_t i = 0; i < this->size; i++) {
-    this->elem_free(this->elems[i]);
     this->elems[i] = NULL;
   }
-
   free(this->elems);
   free(this);
 }
 
-void Vector_reserve(Vector *this, size_t capacity) {
+void vector_reserve(Vector *this, size_t capacity) {
   assert(this);
   if (capacity <= this->capacity) {
     return;
@@ -57,7 +47,7 @@ void Vector_reserve(Vector *this, size_t capacity) {
          (this->capacity - this->size) * sizeof *this->elems);
 }
 
-bool Vector_contains(Vector *this, const void *target, compare_type compare) {
+bool vector_contains(Vector *this, const void *target, compare_type compare) {
   assert(this);
   assert(compare);
 
@@ -70,17 +60,10 @@ bool Vector_contains(Vector *this, const void *target, compare_type compare) {
   return false;
 }
 
-void Vector_remove(Vector *this, size_t index, void **elem_out) {
+void vector_remove(Vector *this, size_t index) {
   assert(this);
-
   if (index >= this->size) {
     return;
-  }
-
-  if (elem_out) {
-    *elem_out = this->elems[index];
-  } else {
-    this->elem_free(this->elems[index]);
   }
 
   this->elems[index] = NULL;
@@ -93,13 +76,13 @@ void Vector_remove(Vector *this, size_t index, void **elem_out) {
   this->size--;
 }
 
-void Vector_push(Vector *this, void *elem) {
+void vector_push(Vector *this, void *elem) {
   assert(this);
-  Vector_reserve(this, this->size + 1);
-  this->elems[this->size++] = this->elem_copy(elem);
+  vector_reserve(this, this->size + 1);
+  this->elems[this->size++] = elem;
 }
 
-void Vector_foreach(Vector *this, void (*callback)(void *elem_ptr)) {
+void vector_foreach(Vector *this, void (*callback)(void *elem_ptr)) {
   assert(this);
   assert(callback);
 
@@ -107,11 +90,9 @@ void Vector_foreach(Vector *this, void (*callback)(void *elem_ptr)) {
     callback(this->elems[i]);
   }
 }
-void Vector_clear(Vector *this) {
-  for(size_t i = 0; i < this->size; i++) {
-    this->elem_free(this->elems[i]);
+void vector_clear(Vector *this) {
+  for (size_t i = 0; i < this->size; i++) {
     this->elems[i] = NULL;
   }
-
   this->size = 0;
 }

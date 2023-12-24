@@ -1,79 +1,51 @@
-#include "include/astring.h"
-#include "include/common.h"
+#include "sstring.h"
+#include "common.h"
 
-size_t StringSize(const string_t *this) { return this->size; }
-size_t StringCapacity(const string_t *this) { return this->capacity; }
+size_t string_size(String *this) { return this->size; }
+size_t string_capacity(String *this) { return this->capacity; }
 
-/**
- * Creates a new string_tobject with a capacity of at least n characters
- */
-string_t *StringConstructor(size_t n) {
-  string_t *this = malloc(sizeof *this);
-  this->size = 0;
-  this->capacity = MAX(_align_capacity(n), INITIAL_CAPACITY);
+String *string_alloc() {
+  String *this = calloc(1, sizeof *this);
+  this->capacity = INITIAL_CAPACITY;
   this->buffer = calloc(this->capacity, 1);
-
   return this;
 }
 
-string_t *StringDefaultConstructor() {
-  return StringConstructor(INITIAL_CAPACITY);
-}
-
-/**
- * Adds a single characters to the end of the String
- */
-void StringAdd(string_t *this, char c) {
-  StringReserve(this, this->size + 1);
+void string_append_char(String *this, char c) {
+  string_reserve(this, this->size + 1);
   this->buffer[this->size++] = c;
 }
 
-/**
- * Adds a c string to the end of the String
- */
-void StringAddCstr(string_t *this, char *cstr) {
+void string_append_cstr(String *this, const char *cstr) {
   assert(this);
   assert(cstr);
   size_t length = strlen(cstr);
-  StringReserve(this, this->size + length);
+  string_reserve(this, this->size + length);
   memcpy(this->buffer + this->size, cstr, length);
   this->size += length;
 }
 
-/**
- * Concatenates the string_tother to the String this
- */
-void StringAppend(string_t *this, const string_t *other) {
-  StringReserve(this, this->size + other->size);
+void string_append_string(String *this, const String *other) {
+  string_reserve(this, this->size + other->size);
   memcpy(this->buffer + this->size, other->buffer, other->size);
   this->size += other->size;
 }
 
-/**
- * Creates a C string from given String
- */
-char *StringToCstr(string_t *this) {
+char *string_to_cstr(String *this) {
   char *cstr = malloc(this->size + 1);
   memcpy(cstr, this->buffer, this->size);
   cstr[this->size] = 0;
   return cstr;
 }
 
-/**
- * Creates a string_tobject from a C string
- */
-string_t *CstrToString(char *cstr) {
+String *string_allloc1(const char *cstr) {
   size_t length = strlen(cstr);
-  string_t *this = StringConstructor(length);
-  memcpy(this->buffer, cstr, length);
-  this->size = length;
+  String *this = string_alloc();
+  string_append_cstr(this, cstr);
   return this;
 }
 
-/**
- * Destructor to free up all memory allocated by the string_tincluding itself
- */
-void StringDestructor(string_t *this) {
+void string_free(String *this) {
   if (!this) {
     return;
   }
@@ -83,10 +55,10 @@ void StringDestructor(string_t *this) {
 }
 
 /**
- * Returns a substring (C string) of given string_tin the range [start ... end)
+ * Returns a substring (C string) of given Stringin the range [start ... end)
  * Returns NULL if invalid range i.e. end < start
  */
-char *StringSlice(string_t *this, size_t start, size_t end) {
+char *string_slice(String *this, size_t start, size_t end) {
   if (end < start || start >= this->size || end > this->size) {
     return NULL;
   }
@@ -98,16 +70,16 @@ char *StringSlice(string_t *this, size_t start, size_t end) {
 }
 
 /**
- * To change the size of given string_tto specified size.
+ * To change the size of given Stringto specified size.
  * - If new size > old size => This function will expand the string in size and
  * capacity and fill new bytes with 0.
- * - If new size < old size => string_twill destroy the additional bytes and
+ * - If new size < old size => Stringwill destroy the additional bytes and
  * shrink itself to given size and capacity.
  * - This function WILL change the SIZE and CAPACITY of the given String.
  * - The capacity of the string will be at least the minimum capacity, i.e.
  * capacity >= size.
  */
-void StringResize(string_t *this, size_t size) {
+void string_resize(String *this, size_t size) {
   if (size == this->size) {
     return;
   }
@@ -132,7 +104,7 @@ void StringResize(string_t *this, size_t size) {
  * bytes.
  * - It will NOT change the size of the string, but it MAY change its capacity.
  */
-void StringReserve(string_t *this, size_t capacity) {
+void string_reserve(String *this, size_t capacity) {
   if (capacity > this->capacity) {
     this->capacity = _align_capacity(capacity);
     this->buffer = realloc(this->buffer, this->capacity);
