@@ -12,12 +12,16 @@ typedef void (*callback_type)(void *elem_ptr);
 
 void *int_copy(const void *);
 void *shallow_copy(const void *);
-void *string_copy(const void *);
+void *cstring_copy(const void *);
 
 void int_free(void *);
 void shallow_free(void *);
-void string_free(void *);
+void cstring_free(void *);
 
 int int_compare(const void *, const void *);
 int shallow_compare(const void *, const void *);
-int string_compare(const void *, const void *);
+int cstring_compare(const void *, const void *);
+
+const char *int_to_string(void *p);
+const char *shallow_to_string(void *p);
+

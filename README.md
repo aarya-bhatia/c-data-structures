@@ -2,10 +2,9 @@
 
 1. List
 2. Vector
-3. Hash Table
-4. Blocking Queue
+3. Hashtable
+4. Queue
 5. String
-6. Graph (TODO)
 
 ## Build
 

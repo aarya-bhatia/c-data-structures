@@ -1,5 +1,4 @@
 #include "sstring.h"
-#include "common.h"
 
 size_t string_size(String *this) { return this->size; }
 size_t string_capacity(String *this) { return this->capacity; }
@@ -8,6 +7,12 @@ String *string_alloc() {
   String *this = calloc(1, sizeof *this);
   this->capacity = INITIAL_CAPACITY;
   this->buffer = calloc(this->capacity, 1);
+  return this;
+}
+
+String *string_alloc1(const char *cstr) {
+  String *this = string_alloc();
+  string_append_cstr(this, cstr);
   return this;
 }
 
@@ -36,13 +41,6 @@ char *string_to_cstr(String *this) {
   memcpy(cstr, this->buffer, this->size);
   cstr[this->size] = 0;
   return cstr;
-}
-
-String *string_allloc1(const char *cstr) {
-  size_t length = strlen(cstr);
-  String *this = string_alloc();
-  string_append_cstr(this, cstr);
-  return this;
 }
 
 void string_free(String *this) {

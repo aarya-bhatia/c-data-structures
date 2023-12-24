@@ -1,39 +1,52 @@
+DIRS=$(shell find src/ -type d)
+INCLUDES=$(addprefix -I,$(DIRS))
+
 CFLAGS=-std=c99 -Wall -Wextra -Wno-pointer-arith \
 	   -pedantic -gdwarf-4 -MMD -MP -O0 \
-	   -Isrc -D_GNU_SOURCE -c
+	   -D_GNU_SOURCE -c $(INCLUDES)
 
-FILES=src/common.c src/astring.c src/queue.c\
-	  src/hashtable.c src/list.c src/vector.c\
-	  src/files.c
+CORE_FILES=$(wildcard src/core/*.c)
+CORE_OBJS=$(CORE_FILES:src/%.c=obj/%.o)
 
-OBJ=$(FILES:src/%.c=obj/%.o)
+EXTRA_FILES=$(wildcard src/extra/*.c)
+EXTRA_OBJS=$(EXTRA_FILES:src/%.c=obj/%.o)
 
-all: test string_test ht_test files_test
+all: bin/vector_test bin/list_test bin/string_test bin/files_test
 
-ht_test: obj/ht_test.o $(OBJ)
+tmp:
+	echo $(CORE_OBJS)
+
+bin/ht_test: obj/test/ht_test.o $(CORE_OBJS)
+	mkdir -p $(dir $@);
 	gcc $^ -o $@
 
-string_test: obj/string_test.o $(OBJ)
+bin/vector_test: obj/test/vector_test.o $(CORE_OBJS)
+	mkdir -p $(dir $@);
 	gcc $^ -o $@
 
-files_test: obj/files_test.o $(OBJ)
+bin/list_test: obj/test/list_test.o $(CORE_OBJS)
+	mkdir -p $(dir $@);
 	gcc $^ -o $@
 
-test: obj/test.o $(OBJ)
+bin/string_test: obj/test/string_test.o $(CORE_OBJS)
+	mkdir -p $(dir $@);
 	gcc $^ -o $@
 
-libaarya: $(OBJ)
+bin/files_test: obj/test/files_test.o $(CORE_OBJS) $(EXTRA_OBJS)
+	gcc $^ -o $@
+
+lib: $(CORE_OBJS)
 	ar rcs libaarya.a $^
 
 obj/%.o: src/%.c
-	mkdir -p obj;
+	mkdir -p $(dir $@);
 	gcc $(CFLAGS) $< -o $@
 
 memcheck:
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./test
 
 clean:
-	rm -rf obj test string_test ht_test files_test libaarya.a
+	rm -rf obj bin *.a
 
 .PHONY: clean libaarya memcheck
 

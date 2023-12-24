@@ -11,7 +11,7 @@ typedef struct Vector {
   size_t capacity;
 } Vector;
 
-Vector *vector_new();
+Vector *vector_alloc();
 void vector_free(Vector *);
 void *vector_first(Vector *);
 void *vector_last(Vector *);

@@ -9,13 +9,13 @@ char *resolve_path(char *path) {
     return NULL;
   }
 
-  Vector *vector = Vector_alloc(NULL, free);
+  Vector *vector = vector_alloc(NULL, free);
   assert(vector);
 
   if (path[0] != '/') {
-    Vector_push(vector, getcwd(NULL, 0));
+    vector_push(vector, getcwd(NULL, 0));
   } else {
-    Vector_push(vector, strdup("/"));
+    vector_push(vector, strdup("/"));
   }
 
   char *s = strstr(path, "/");
@@ -35,15 +35,15 @@ char *resolve_path(char *path) {
   assert(t);
   if (*t != 0) {
     assert(*t != '/');
-    if (strcmp(t, ".") == 0 && Vector_size(vector) == 0) {
-      Vector_push(vector, strdup(getenv("HOME")));
+    if (strcmp(t, ".") == 0 && vector_size(vector) == 0) {
+      vector_push(vector, strdup(getenv("HOME")));
     } else {
       resolve_path_helper(vector, t);
     }
   }
 
   char *result = join(vector);
-  Vector_free(vector);
+  vector_free(vector);
 
   assert(result[0] == '/');
   assert(strcmp(result, "~") != 0);
@@ -86,18 +86,18 @@ void mkdirs(char *filepath) {
 
 char *join(Vector *vector) {
   assert(vector);
-  assert(Vector_size(vector) > 0);
+  assert(vector_size(vector) > 0);
 
-  string_t *s = StringDefaultConstructor();
-  for (size_t i = 0; i < Vector_size(vector); i++) {
-    char *name = Vector_at(vector, i);
+  String *s = string_alloc();
+  for (size_t i = 0; i < vector_size(vector); i++) {
+    char *name = vector_at(vector, i);
 
     assert(name);
     assert(strlen(name) > 0);
 
     if (strcmp(name, "/") == 0) {
-      if (StringSize(s) == 0) {
-        StringAddCstr(s, "/");
+      if (string_size(s) == 0) {
+        string_append_cstr(s, "/");
         continue;
       }
     }
@@ -109,33 +109,33 @@ char *join(Vector *vector) {
         name[n - 1] = 0;
       }
 
-      if (StringSize(s) == 0) {
-        StringAddCstr(s, name);
+      if (string_size(s) == 0) {
+        string_append_cstr(s, name);
       } else {
         assert(strlen(name + 1) > 0);
-        StringAddCstr(s, name + 1);
+        string_append_cstr(s, name + 1);
       }
     } else {
-      StringAddCstr(s, name);
+      string_append_cstr(s, name);
     }
 
-    if (i + 1 < Vector_size(vector)) {
-      StringAddCstr(s, "/");
+    if (i + 1 < vector_size(vector)) {
+      string_append_cstr(s, "/");
     }
   }
 
-  char *joined = StringToCstr(s);
-  StringDestructor(s);
+  char *joined = string_to_cstr(s);
+  string_free(s);
   return joined;
 }
 
 void resolve_path_helper(Vector *vector, char *name) {
   if (strcmp(name, "..") == 0) {
-    if (Vector_size(vector) >= 1) {
-      char *prev = Vector_at(vector, Vector_size(vector) - 1);
+    if (vector_size(vector) >= 1) {
+      char *prev = vector_at(vector, vector_size(vector) - 1);
       char *ptr = rstrstr(prev, "/");
       if (!ptr) {
-        Vector_remove(vector, Vector_size(vector) - 1, NULL);
+        vector_remove(vector, vector_size(vector) - 1);
       } else {
         *ptr = 0;
       }
@@ -143,9 +143,9 @@ void resolve_path_helper(Vector *vector, char *name) {
       log_error("Invalid path");
     }
   } else if (strcmp(name, "~") == 0) {
-    Vector_clear(vector);
-    Vector_push(vector, strdup(getenv("HOME")));
+    vector_clear(vector);
+    vector_push(vector, strdup(getenv("HOME")));
   } else if (strcmp(name, ".") != 0) {
-    Vector_push(vector, strdup(name));
+    vector_push(vector, strdup(name));
   }
 }

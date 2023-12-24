@@ -83,7 +83,7 @@ char *rstrstr(char *string, char *pattern) {
 	return prev;
 }
 
-void *shallow_copy(void *elem_ptr) { return elem_ptr; }
+/* void *shallow_copy(void *elem_ptr) { return elem_ptr; }
 void shallow_free(void *elem_ptr) { (void)elem_ptr; }
 
 int shallow_compare(const void *elem_ptr_1, const void *elem_ptr_2) {
@@ -170,4 +170,4 @@ char *double_to_string(void *double_ptr) {
 
 char *char_to_string(void *char_ptr) {
 	return make_string("%c", *(char *)char_ptr);
-}
+} */
