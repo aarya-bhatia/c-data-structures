@@ -11,7 +11,7 @@ CORE_OBJS=$(CORE_FILES:src/%.c=obj/%.o)
 EXTRA_FILES=$(wildcard src/extra/*.c)
 EXTRA_OBJS=$(EXTRA_FILES:src/%.c=obj/%.o)
 
-all: bin/vector_test bin/list_test bin/string_test bin/files_test
+all: bin/vector_test bin/list_test bin/string_test bin/files_test lib
 
 tmp:
 	echo $(CORE_OBJS)
@@ -36,7 +36,12 @@ bin/files_test: obj/test/files_test.o $(CORE_OBJS) $(EXTRA_OBJS)
 	gcc $^ -o $@
 
 lib: $(CORE_OBJS)
-	ar rcs libaarya.a $^
+	mkdir lib
+	ar rcs lib/libaarya.a $^
+	cp src/core/*.h lib
+	cp src/extra/*.h lib
+	tar -cf libaarya.tar lib
+	rm -rf lib
 
 obj/%.o: src/%.c
 	mkdir -p $(dir $@);
