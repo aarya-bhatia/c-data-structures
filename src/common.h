@@ -12,8 +12,9 @@
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
+#define DEFAULT_CAPACITY 8
+
 char *make_string(char *format, ...);
 char *rstrstr(char *string, char *pattern);
 char *trimwhitespace(char *str);
 size_t _align_capacity(size_t capacity);
-

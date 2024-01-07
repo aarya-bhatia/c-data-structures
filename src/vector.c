@@ -1,4 +1,5 @@
 #include "vector.h"
+#include "sstring.h"
 
 size_t vector_size(Vector *this) { return this->size; }
 size_t vector_capacity(Vector *this) { return this->capacity; }
@@ -95,4 +96,65 @@ void vector_clear(Vector *this) {
     this->elems[i] = NULL;
   }
   this->size = 0;
+}
+
+/**
+ * Shuffles the elements of the vector in-place.
+ */
+void vector_shuffle(Vector *this) {
+  for (size_t i = 0; i < this->size; i++) {
+    size_t j = rand() % this->size;
+    void *tmp = this->elems[i];
+    this->elems[i] = this->elems[j];
+    this->elems[j] = tmp;
+  }
+}
+
+/**
+ * Returns a string by concatenating all the strings in the vector.
+ * The delimiter is placed between any two elements.
+ */
+char *vector_join(Vector *strvec, const char *delim) {
+  String *s = string_alloc();
+
+  for (size_t i = 0; i < vector_size(strvec); i++) {
+    string_append_cstr(s, vector_at(strvec, i));
+    if (i + 1 < vector_size(strvec)) {
+      string_append_cstr(s, delim);
+    }
+  }
+
+  char *cstr = string_to_cstr(s);
+  string_free(s);
+  return cstr;
+}
+
+/**
+ * Returns a vector of c-strings of the tokens in the string
+ */
+Vector *vector_split(const char *str, const char *delim) {
+  assert(str);
+
+  Vector *v = vector_alloc();
+
+  if (delim == NULL) {
+    delim = " ";
+  }
+
+  while (*str != 0) {
+    const char *first = str;
+    const char *second = strstr(first, delim);
+
+    if (second) {
+      char *token = strndup(first, second - first);
+      str = second + 1;
+      vector_push(v, token);
+    } else {
+      char *token = strdup(first);
+      vector_push(v, token);
+      break;
+    }
+  }
+
+  return v;
 }

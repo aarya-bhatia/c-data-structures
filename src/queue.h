@@ -2,6 +2,7 @@
 
 #include <pthread.h>
 
+#include "callbacks.h"
 #include "common.h"
 #include "list.h"
 

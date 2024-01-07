@@ -18,7 +18,9 @@ typedef struct ListIter {
   ListNode *current;
 } ListIter;
 
+ListNode *list_node_alloc(void *elem);
 List *list_alloc();
+void list_clear(List *);
 void list_free(List *);
 size_t list_size(List *);
 

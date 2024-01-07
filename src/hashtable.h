@@ -2,6 +2,7 @@
 
 #include "callbacks.h"
 #include "common.h"
+#include "vector.h"
 
 #define HT_DENSITY 0.6
 #define HT_INITIAL_CAPACITY 11
@@ -45,9 +46,14 @@ HTNode *ht_find(Hashtable *, const void *key);
 void ht_iter_init(HashtableIter *itr, Hashtable *ht);
 bool ht_iter_next(HashtableIter *itr, const void **key_save, void **value_save);
 void ht_foreach(Hashtable *, void (*callback)(const void *key, void *value));
+void ht_foreach_key(Hashtable *, void (*callback)(const void *key));
+void ht_foreach_value(Hashtable *, void (*callback)(void *value));
 
 void ht_print(Hashtable *, to_string_type key_to_string,
               to_string_type value_to_string);
+
+Vector *ht_get_keys(Hashtable *);
+Vector *ht_get_values(Hashtable *);
 
 /* hash functions */
 uint32_t jenkins_hash(const void *key, size_t len);

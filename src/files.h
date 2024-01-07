@@ -7,10 +7,10 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "../core/common.h"
-#include "../core/log.h"
-#include "../core/sstring.h"
-#include "../core/vector.h"
+#include "common.h"
+#include "log.h"
+#include "sstring.h"
+#include "vector.h"
 
 char *resolve_path(char *path);
 void mkdirs(char *filepath);

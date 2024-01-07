@@ -1,6 +1,6 @@
 #include "hashtable.h"
 
-#include "common.h"
+#include "vector.h"
 
 size_t ht_size(Hashtable *this) { return this->size; }
 size_t ht_capacity(Hashtable *this) { return this->capacity; }
@@ -94,7 +94,6 @@ void ht_node_free(Hashtable *this, HTNode *node) {
   }
 
   this->key_free((void *)node->key);
-  memset(node, 0, sizeof *node);
   free(node);
 }
 
@@ -114,7 +113,6 @@ void ht_free(Hashtable *this) {
       }
     }
 
-    free(this->table[i]);
     this->table[i] = NULL;
   }
 
@@ -131,6 +129,30 @@ void ht_foreach(Hashtable *this,
       HTNode *itr = this->table[i];
       while (itr) {
         callback(itr->key, itr->value);
+        itr = itr->next;
+      }
+    }
+  }
+}
+
+void ht_foreach_key(Hashtable *this, void (*callback)(const void *key)) {
+  for (size_t i = 0; i < this->capacity; i++) {
+    if (this->table[i]) {
+      HTNode *itr = this->table[i];
+      while (itr) {
+        callback(itr->key);
+        itr = itr->next;
+      }
+    }
+  }
+}
+
+void ht_foreach_value(Hashtable *this, void (*callback)(void *value)) {
+  for (size_t i = 0; i < this->capacity; i++) {
+    if (this->table[i]) {
+      HTNode *itr = this->table[i];
+      while (itr) {
+        callback(itr->value);
         itr = itr->next;
       }
     }
@@ -303,4 +325,27 @@ void ht_print(Hashtable *this, to_string_type key_to_string,
       itr = itr->next;
     }
   }
+}
+
+Vector *ht_get_keys(Hashtable *this) {
+  Vector *res = vector_alloc();
+  HashtableIter itr;
+  const void *key = NULL;
+  ht_iter_init(&itr, this);
+  while (ht_iter_next(&itr, &key, NULL)) {
+    vector_push(res, this->key_copy(key));
+  }
+  return res;
+}
+
+Vector *ht_get_values(Hashtable *this) {
+  Vector *res = vector_alloc();
+  HashtableIter itr;
+  void *value = NULL;
+  ht_iter_init(&itr, this);
+  while (ht_iter_next(&itr, NULL, &value)) {
+    vector_push(res, value);
+  }
+
+  return res;
 }

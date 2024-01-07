@@ -4,6 +4,7 @@
 .DS_Store
 
 *.o
+*.d
 *.a
 *.so
 *.exe
@@ -14,6 +15,7 @@ string_test
 files_test
 test
 
+*.tmp
 tmp
 obj
 bin

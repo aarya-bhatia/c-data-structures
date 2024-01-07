@@ -2,6 +2,12 @@
 
 size_t list_size(List *this) { return this->size; }
 
+ListNode *list_node_alloc(void *elem) {
+  ListNode *node = calloc(1, sizeof *node);
+  node->elem = elem;
+  return node;
+}
+
 List *list_alloc() {
   List *this = calloc(1, sizeof *this);
   this->head = NULL;
@@ -10,7 +16,7 @@ List *list_alloc() {
   return this;
 }
 
-void list_free(List *this) {
+void list_clear(List *this) {
   ListNode *tmp = this->head;
 
   while (tmp) {
@@ -20,7 +26,12 @@ void list_free(List *this) {
     tmp = next;
   }
 
-  memset(this, 0, sizeof *this);
+  this->head = this->tail = NULL;
+  this->size = 0;
+}
+
+void list_free(List *this) {
+  list_clear(this);
   free(this);
 }
 
@@ -65,8 +76,7 @@ void list_insert_before(List *this, ListNode *position, ListNode *insert) {
 }
 
 void list_push_front(List *this, void *elem) {
-  ListNode *node = calloc(1, sizeof *node);
-  node->elem = elem;
+  ListNode *node = list_node_alloc(elem);
 
   if (!this->size) {
     this->head = this->tail = node;
@@ -77,8 +87,7 @@ void list_push_front(List *this, void *elem) {
 }
 
 void list_push_back(List *this, void *elem) {
-  ListNode *node = calloc(1, sizeof *node);
-  node->elem = elem;
+  ListNode *node = list_node_alloc(elem);
 
   if (!this->size) {
     this->head = this->tail = node;

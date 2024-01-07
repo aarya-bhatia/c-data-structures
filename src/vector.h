@@ -3,8 +3,6 @@
 #include "callbacks.h"
 #include "common.h"
 
-#define DEFAULT_CAPACITY 8
-
 typedef struct Vector {
   void **elems;
   size_t size;
@@ -24,3 +22,7 @@ void vector_remove(Vector *, size_t index);
 void vector_push(Vector *, void *elem);
 void vector_foreach(Vector *, void (*callback)(void *elem_ptr));
 void vector_clear(Vector *);
+
+void vector_shuffle(Vector *);
+char *vector_join(Vector *, const char *);
+Vector *vector_split(const char *str, const char *delim);
