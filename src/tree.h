@@ -14,4 +14,4 @@ Tree *tree_insert(Tree *t, int key);
 Tree *tree_find(Tree *t, int key);
 void tree_free(Tree *t);
 size_t tree_size(Tree *t);
-bool tree_remove(Tree *tree, int key);
+Tree *tree_remove(Tree *tree, int key);
