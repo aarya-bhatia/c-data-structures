@@ -20,6 +20,7 @@ typedef struct ListIter {
 
 ListNode *list_node_alloc(void *elem);
 List *list_alloc();
+void list_init(List *);
 void list_clear(List *);
 void list_free(List *);
 size_t list_size(List *);
@@ -37,3 +38,7 @@ void list_insert_before(List *, ListNode *position, ListNode *insert);
 
 void list_iter_init(ListIter *iter, List *list);
 bool list_iter_next(ListIter *iter, void **elem_ptr);
+
+ListNode *list_seek(List *, size_t index);
+void *list_get(List *, size_t index);
+void list_set(List *, size_t index, void *elem);

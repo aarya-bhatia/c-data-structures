@@ -10,10 +10,14 @@ ListNode *list_node_alloc(void *elem) {
 
 List *list_alloc() {
   List *this = calloc(1, sizeof *this);
+  list_init(this);
+  return this;
+}
+
+void list_init(List *this) {
   this->head = NULL;
   this->tail = NULL;
   this->size = 0;
-  return this;
 }
 
 void list_clear(List *this) {
@@ -167,4 +171,35 @@ bool list_iter_next(ListIter *iter, void **elem_ptr) {
   iter->current = iter->current->next;
 
   return true;
+}
+
+/**
+ * Returns the node at given index in the list.
+ */
+ListNode *list_seek(List *this, size_t index) {
+  assert(index < list_size(this));
+
+  ListNode *res = this->head;
+  for (size_t i = 0; i < index; i++) {
+    res = res->next;
+  }
+
+  return res;
+}
+
+/**
+ * Returns the element at given index in the list.
+ */
+void *list_get(List *this, size_t index) {
+  assert(index < list_size(this));
+  return list_seek(this, index)->elem;
+}
+
+/**
+ * Updates the element at given index in the list.
+ */
+void list_set(List *this, size_t index, void *elem) {
+  assert(index < list_size(this));
+  ListNode *node = list_seek(this, index);
+  node->elem = elem;
 }

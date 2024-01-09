@@ -1,4 +1,5 @@
 #include "../list.h"
+#include "../list_util.h"
 #include "../sorted_list.h"
 
 void list_test() {
@@ -60,7 +61,49 @@ void sorted_list_test() {
   sorted_list_free(slist);
 }
 
+void list_util_test() {
+  List l;
+  List l1;
+
+  list_init(&l);
+  list_init(&l1);
+
+  list_push_back(&l, "a");
+  list_push_back(&l, "b");
+  list_push_back(&l, "c");
+  list_push_back(&l, "d");
+
+  assert(!strcmp(list_get(&l, 0), "a"));
+  assert(!strcmp(list_get(&l, 1), "b"));
+  assert(!strcmp(list_get(&l, 2), "c"));
+  assert(!strcmp(list_get(&l, 3), "d"));
+
+  list_split(&l, list_seek(&l, 2), &l1);
+
+  assert(list_size(&l) == 2);
+  assert(list_size(&l1) == 2);
+
+  assert(!strcmp(list_get(&l, 0), "a"));
+  assert(!strcmp(list_get(&l, 1), "b"));
+  assert(!strcmp(list_get(&l1, 0), "c"));
+  assert(!strcmp(list_get(&l1, 1), "d"));
+
+  list_concat(&l, &l1, &l);
+
+  assert(list_size(&l) == 4);
+  assert(list_size(&l1) == 0);
+
+  assert(!strcmp(list_get(&l, 0), "a"));
+  assert(!strcmp(list_get(&l, 1), "b"));
+  assert(!strcmp(list_get(&l, 2), "c"));
+  assert(!strcmp(list_get(&l, 3), "d"));
+
+  list_clear(&l);
+  list_clear(&l1);
+}
+
 int main() {
   list_test();
   sorted_list_test();
+  list_util_test();
 }
