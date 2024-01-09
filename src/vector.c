@@ -22,7 +22,7 @@ void *vector_at(Vector *this, size_t index) {
 
 Vector *vector_alloc() {
   Vector *this = calloc(1, sizeof *this);
-  this->elems = calloc(DEFAULT_CAPACITY, sizeof *this->elems);
+  this->elems = calloc(DEFAULT_CAPACITY, sizeof(void *));
   this->size = 0;
   this->capacity = DEFAULT_CAPACITY;
   return this;
@@ -81,6 +81,26 @@ void vector_push(Vector *this, void *elem) {
   assert(this);
   vector_reserve(this, this->size + 1);
   this->elems[this->size++] = elem;
+}
+
+void vector_expand(Vector *this) {
+  this->capacity *= 2;
+  this->elems = realloc(this->elems, sizeof(void *) * this->capacity);
+}
+
+void vector_shrink(Vector *this) {
+  if (this->size * 4 <= this->capacity) {
+    this->capacity /= 2;
+    this->elems = realloc(this->elems, sizeof(void *) * this->capacity);
+  }
+}
+
+void *vector_pop(Vector *this) {
+  size_t last = vector_size(this) - 1;
+  void *tmp = vector_at(this, last);
+  vector_remove(this, last);
+  vector_shrink(this);
+  return tmp;
 }
 
 void vector_foreach(Vector *this, void (*callback)(void *elem_ptr)) {
