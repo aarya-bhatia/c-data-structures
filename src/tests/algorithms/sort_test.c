@@ -1,4 +1,4 @@
-#include "../../algorithms/sort.h"
+#include "../../algorithms/algorithms.h"
 
 void print_int_list(List *l) {
   ListIter itr;
