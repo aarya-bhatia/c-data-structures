@@ -32,7 +32,7 @@ void test3() {
   Heap *heap = heap_alloc(0);
 
   HeapNode *n1 = heap_push(heap, 10, (void *)10);
-  HeapNode *n2 = heap_push(heap, 8, (void *)8);
+  heap_push(heap, 8, (void *)8);
 
   assert(heap_size(heap) == 2);
   assert((size_t)heap_peek(heap) == 8);

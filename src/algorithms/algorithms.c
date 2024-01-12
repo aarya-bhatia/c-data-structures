@@ -83,9 +83,9 @@ void vector_sort_helper(Vector *v, size_t l, size_t r, compare_type compare) {
   vector_sort_helper(v, mid, r, compare);
 
   void *sorted[size];
-  int i = l;
-  int j = mid;
-  int k = 0;
+  size_t i = l;
+  size_t j = mid;
+  size_t k = 0;
 
   while (i <= mid - 1 && j <= r) {
     if (compare(v->elems[i], v->elems[j]) < 0) {
@@ -107,7 +107,7 @@ void vector_sort_helper(Vector *v, size_t l, size_t r, compare_type compare) {
   assert(j == r + 1);
   assert(k == size);
 
-  for (int vi = l; vi <= r; vi++) {
+  for (size_t vi = l; vi <= r; vi++) {
     v->elems[vi] = sorted[vi - l];
   }
 }

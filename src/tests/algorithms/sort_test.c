@@ -11,7 +11,7 @@ void print_int_list(List *l) {
 }
 
 void print_int_vector(Vector *v) {
-  for (int i = 0; i < v->size; i++) {
+  for (size_t i = 0; i < v->size; i++) {
     printf("%d ", *(int *)v->elems[i]);
   }
   printf("\n");
@@ -29,10 +29,10 @@ void list_sort_test() {
     list_push_back(&l, nums + i);
   }
 
-  assert(l.size == n);
+  assert(l.size == (size_t)n);
 
   list_sort(&l, (compare_type)int_compare);
-  assert(l.size == n);
+  assert(l.size == (size_t)n);
 
   ListIter itr;
   list_iter_init(&itr, &l);
