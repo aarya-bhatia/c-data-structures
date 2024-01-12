@@ -68,6 +68,53 @@ void list_sort(List *list, compare_type compare) {
 }
 
 /**
- * Quick sort TODO
+ * Sorts the elements in vector v from index l to index r using comparsion
+ * function "compare".
  */
-void vector_sort(Vector *v, compare_type compare) {}
+void vector_sort_helper(Vector *v, size_t l, size_t r, compare_type compare) {
+  size_t size = r - l + 1;
+  if (size <= 1) {
+    return;
+  }
+
+  size_t mid = l + (size >> 1);
+
+  vector_sort_helper(v, l, mid - 1, compare);
+  vector_sort_helper(v, mid, r, compare);
+
+  void *sorted[size];
+  int i = l;
+  int j = mid;
+  int k = 0;
+
+  while (i <= mid - 1 && j <= r) {
+    if (compare(v->elems[i], v->elems[j]) < 0) {
+      sorted[k++] = v->elems[i++];
+    } else {
+      sorted[k++] = v->elems[j++];
+    }
+  }
+
+  while (i <= mid - 1) {
+    sorted[k++] = v->elems[i++];
+  }
+
+  while (j <= r) {
+    sorted[k++] = v->elems[j++];
+  }
+
+  assert(i == mid);
+  assert(j == r + 1);
+  assert(k == size);
+
+  for (int vi = l; vi <= r; vi++) {
+    v->elems[vi] = sorted[vi - l];
+  }
+}
+
+/**
+ * Merge sort
+ */
+void vector_sort(Vector *v, compare_type compare) {
+  vector_sort_helper(v, 0, v->size - 1, compare);
+}

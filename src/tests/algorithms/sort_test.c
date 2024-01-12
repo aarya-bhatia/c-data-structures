@@ -10,6 +10,13 @@ void print_int_list(List *l) {
   printf("\n");
 }
 
+void print_int_vector(Vector *v) {
+  for (int i = 0; i < v->size; i++) {
+    printf("%d ", *(int *)v->elems[i]);
+  }
+  printf("\n");
+}
+
 void list_sort_test() {
   List l;
   list_init(&l);
@@ -23,13 +30,9 @@ void list_sort_test() {
   }
 
   assert(l.size == n);
-  // puts("before sort:");
-  // print_int_list(&l);
 
   list_sort(&l, (compare_type)int_compare);
   assert(l.size == n);
-  // puts("after sort:");
-  // print_int_list(&l);
 
   ListIter itr;
   list_iter_init(&itr, &l);
@@ -50,7 +53,24 @@ void list_sort_test() {
   list_clear(&l);
 }
 
+void vector_sort_test() {
+  Vector *v = vector_alloc();
+  int nums[] = {1, 2, 3};
+  vector_push(v, nums + 2);
+  vector_push(v, nums + 0);
+  vector_push(v, nums + 1);
+
+  printf("before: ");
+  print_int_vector(v);
+  vector_sort(v, (compare_type)int_compare);
+  printf("after: ");
+  print_int_vector(v);
+
+  vector_free(v);
+}
+
 int main() {
   list_sort_test();
+  vector_sort_test();
   return 0;
 }
