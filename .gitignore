@@ -19,3 +19,6 @@ test
 tmp
 obj
 bin
+
+*.out
+tags

@@ -1,4 +1,11 @@
 #!/bin/sh
+if ! make; then
+	echo 'make error'
+fi
 for file in $(ls bin/*); do
-	valgrind $file >/tmp/null 2>/tmp/null && echo $file: $?
+	if valgrind $file 2>/tmp/null; then
+		echo $file: pass
+	else
+		echo $file: fail
+	fi
 done
